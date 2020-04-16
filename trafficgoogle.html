@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+
+/* Set the size of the div element that contains the map */
+      #map {
+        width: 100%;
+          height: 700px;
+       }
+       #myChart{
+         width: 60%;
+          float:left;
+          height: 100px;
+       }
+       #myChart1{
+         width: 60%;
+          float:left;
+          height: 100px;
+       }
+#dictionary {
+    border-collapse: collapse;
+    text-align: left;
+    line-height: 1.5;
+  float:left;
+  width:auto;
+}
+#dictionary thead th {
+    padding: 10px;
+    font-weight: bold;
+    vertical-align: top;
+    color: #369;
+    border-bottom: 3px solid #036;
+}
+#dictionary tbody th {
+    width: 200px;
+    padding: 10px;
+    font-weight: bold;
+    vertical-align: top;
+    border-bottom: 1px solid #ccc;
+    background: #f3f6f7;
+}
+#dictionary td {
+    width: 350px;
+    padding: 10px;
+    vertical-align: top;
+    border-bottom: 1px solid #ccc;
+}
+
+    </style>
+  </head>
+  <body>
+    <h1>Traffic Accidents Map</h1>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+    <script type="text/javascript" src="markerclusterer.js"></script>
+
+    <!--The div element for the map -->
+<script src = "traffic.js"></script>
+
+
+  <div id="map"></div>
+  <h1>Chart & Table</h1>
+  <canvas id="myChart" style= "float:left; width:50%;height:500px;"></canvas>
+    <canvas id="myChart1" style= "float:left; width:50%;height:500px;"></canvas>
+  <script src = "acclist.js"></script>
+  <div id="dictionary" style="overflow-x:hidden; overflow-y:scroll; width:100%;height:500px;"></div>
+
+
+
+
+<script>
+
+// Initialize and add the map
+function initMap() {
+
+  // The location of Uluru
+  var latlng = new google.maps.LatLng(37.296344, 127.072594);
+
+  // The map, centered at Uluru
+
+  var map = new google.maps.Map(
+  document.getElementById('map'), {zoom: 11, center: latlng});
+  var markers = [];
+  for(var x in accident){
+    var acce = accident[x];
+
+    if(acce.SIGUN_NM == '용인시'||acce.SIGUN_NM == '수원시'||acce.SIGUN_NM == '시흥시'){
+        var location = new google.maps.LatLng(acce.WGS84_LAT,acce.WGS84_LOGT);
+        if(acce.SIGUN_NM == '용인시'){
+          addMarker(map," 발생장소: "+acce.SIGUN_NM+"</br> 발생시각: "+acce.DAN_DIV_NM+"</br> 발생사유: "+acce.REGULTN_VIOLT_MDCLASS_NM+"</br> 발생유형: "+acce.ACDNT_TYPE_NM,location,"yellow");
+
+        }else if(acce.SIGUN_NM == '수원시'){
+          addMarker(map," 발생장소: "+acce.SIGUN_NM+"</br> 발생시각: "+acce.DAN_DIV_NM+"</br> 발생사유: "+acce.REGULTN_VIOLT_MDCLASS_NM+"</br> 발생유형: "+acce.ACDNT_TYPE_NM,location,"green");
+        }
+        else if(acce.SIGUN_NM == '시흥시'){
+          addMarker(map," 발생장소: "+acce.SIGUN_NM+"</br> 발생시각: "+acce.DAN_DIV_NM+"</br> 발생사유: "+acce.REGULTN_VIOLT_MDCLASS_NM+"</br> 발생유형: "+acce.ACDNT_TYPE_NM,location,"blue");
+        }
+        else{
+        //  addMarker(map," 발생장소: "+acce.SIGUN_NM+"</br> 발생시각: "+acce.DAN_DIV_NM+"</br> 발생사유: "+acce.REGULTN_VIOLT_MDCLASS_NM+"</br> 발생유형: "+acce.ACDNT_TYPE_NM,location,"red");
+        }
+    }
+  }
+
+  function addMarker(map,name,location,color){
+    let url = "http://maps.google.com/mapfiles/ms/icons/";
+    url += color + "-dot.png";
+
+    var marker = new google.maps.Marker({
+      position:location,
+      icon: {
+       url: url
+     },
+      map:map
+    });
+    var infowindow = new google.maps.InfoWindow({
+            content:name
+    });
+    google.maps.event.addListener(marker,'click',function(){
+      //close all
+      map.setZoom(20);
+      map.setCenter(marker.getPosition());
+      infowindow.open(map,marker);
+    });
+
+    markers.push(marker);
+
+  }
+
+
+  var markerClusterer = new MarkerClusterer(map, markers, {
+            maxZoom: 15,
+            gridSize: 150,
+            imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+  });
+google.maps.event.addListener(window,'load',initMap);
+  // The marker, positioned at Uluru
+}
+
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXTCRHQkg95wTeY0M1luq15Bac5E7JGvs&callback=initMap"></script>
+
+
+
+
+  </body>
+
+</html>
